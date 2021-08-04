@@ -19,7 +19,7 @@ module.exports = function(app) {
                 res.json(data.map(d => ({
                     title: d.title,
                     _id: d._id,
-                    commentcount: d.commentcount || 0
+                    commentcount: d.commentcount
                 })));
             });
         })
@@ -32,7 +32,9 @@ module.exports = function(app) {
                 return;
             }
             const newBook = new BookModel({
-                title: title
+                title: title,
+                commentcount: 0,
+                comments: []
             });
             newBook.save((err, data) => {
                 if (err) console.log(err);
@@ -51,6 +53,10 @@ module.exports = function(app) {
         .get(function(req, res) {
             let bookid = req.params.id;
             //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
+            BookModel.findById(bookid, (err, data) => {
+                if(err) console.log(err);
+                res.json(data);
+            });
         })
 
         .post(function(req, res) {
