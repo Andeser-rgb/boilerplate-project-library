@@ -55,7 +55,8 @@ module.exports = function(app) {
             //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
             BookModel.findById(bookid, (err, data) => {
                 if(err) console.log(err);
-                res.json(data);
+                if(!data) res.send('no book exists');
+                else res.json(data);
             });
         })
 
@@ -63,6 +64,17 @@ module.exports = function(app) {
             let bookid = req.params.id;
             let comment = req.body.comment;
             //json res format same as .get
+            BookModel.findById(id, (err, data) => {
+                if(err) console.log(err);
+                if(!data) res.send('no book exists');
+                else {
+                    data.comments.push(comment);
+                    data.save((err, data) => {
+                        if(err) console.log(err);
+                        res.json(data);
+                    });
+                }
+            });
         })
 
         .delete(function(req, res) {
