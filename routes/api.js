@@ -15,18 +15,27 @@ module.exports = function(app) {
         .get(function(req, res) {
             //response will be array of book objects
             //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
+            BookModel.find({}, (err, data) => {
+                res.json(data.map(d => ({
+                    title: d.title,
+                    _id: d._id,
+                    commentcount: d.commentcount || 0
+                })));
+            });
         })
 
         .post(function(req, res) {
             let title = req.body.title;
             //response will contain new book object including atleast _id and title
-            if(!title){
+            if (!title) {
                 res.send('missing required field title');
                 return;
             }
-            const newBook = new BookModel({title: title});
+            const newBook = new BookModel({
+                title: title
+            });
             newBook.save((err, data) => {
-                if(err) console.log(err);
+                if (err) console.log(err);
                 res.json(data);
             });
 
