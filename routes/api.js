@@ -64,7 +64,11 @@ module.exports = function(app) {
             let bookid = req.params.id;
             let comment = req.body.comment;
             //json res format same as .get
-            BookModel.findById(id, (err, data) => {
+            if(!comment){
+                res.send('missing required field comment');
+                return;
+            }
+            BookModel.findById(bookid, (err, data) => {
                 if(err) console.log(err);
                 if(!data) res.send('no book exists');
                 else {
@@ -80,6 +84,14 @@ module.exports = function(app) {
         .delete(function(req, res) {
             let bookid = req.params.id;
             //if successful response will be 'delete successful'
+            BookModel.findById(bookid, (err, book) => {
+                if(!book){
+                    res.send('no book exists');
+                    return;
+                }
+                book.remove().then(d => res.send('delete successful'));
+            });
+            BookModel.remove({_id: bookid});
         });
 
 };
